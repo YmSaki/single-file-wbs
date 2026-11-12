@@ -3,7 +3,7 @@
 single-file-wbs (WBS Viewer) の設計ドキュメント。
 仕様の単一ソースは [`AGENTS.md`](../AGENTS.md)、使い方は [`README.md`](../README.md)。
 
-*自動生成（`scripts/refresh_docs_index.py`）: 17ファイル*
+*自動生成（`scripts/refresh_docs_index.py`）: 19ファイル*
 
 ## 設計書
 
@@ -12,6 +12,7 @@ single-file-wbs (WBS Viewer) の設計ドキュメント。
 | [依存タブ（構造の軸）設計メモ — brief-deps v0.2](design/brief-deps.md) | 1. 静的モック（v0.1・8枚）→ 動くモック第1〜2版（案F）→ **第3版＝案G′**（方眼・自動配置・ゴム線・日数・赤の最長経路・図に載せる・矢印... |
 | [single-file-issue v0.1（MVP）設計ブリーフ](design/brief-v0.1.md) | 課題管理表を「JSON 1枚＋単一HTMLビューア＋`CLAUDE.md`」で回す v0.1（MVP）の設計ブリーフ（一次記録）。 |
 | [v0.2 設計ブリーフ：計画（WBS）と課題（Issue）を 1 枚の HTML・1 つの JSON に統合する](design/brief-v0.2-unified.md) | 計画（WBS）と課題（Issue）を1枚の HTML・1つの JSON に統合すると決めた v0.2 の設計ブリーフ（一次記録）。 |
+| [MCP App 化の設計メモ（会話の中に WBS Viewer を出す）](design/mcp-app.md) | `wbs_viewer.html` を無改変のまま、MCP Apps 対応ホスト（Claude など）の会話の中に表示・編集できるようにした構成の記録。 |
 | [WBS Viewer 全体概要](design/system-overview.md) | `wbs_viewer.html` と周辺ファイルの構成から逆生成した全体像（構成・依存・データの流れ）。 |
 | [統合ビューアの差し込み口（段階 C で wbs 本家へ移すための指示書）](design/unified-touchpoints.md) | 統合ビューアを本家へ移すための差し込み口の一覧（橋 `PM` の窓口・課題描画器の作り方・取り込み手順）。 |
 
@@ -30,6 +31,7 @@ single-file-wbs (WBS Viewer) の設計ドキュメント。
 | [ADR-0009: 「二つの問い」と「完了条件」を第一級フィールドにする](adr/0009-two-questions-and-close-condition.md) | 課題を載せる条件（放置するとどうなるか／やると何が生まれるか）と完了条件を、備考ではなく専用フィールドで持つ。 |
 | [ADR-0010: シート＝Excel の「1ブック＝複数シート」に倣う](adr/0010-sheets-as-excel-workbook.md) | 課題表のファイル1枚を「ブック」とし、案件ごとの「シート」をタブで切り替える。 |
 | [ADR-0011: 計画と課題を1つの JSON に置く（案件＝project・リンク台帳は課題側だけ）](adr/0011-plan-and-issues-in-one-json.md) | `projects[]` の中に 計画（`tasks`）と課題（`issues`）を並べ、つながりは課題の `links[]` にだけ書く。 |
+| [ADR-0012: MCP App は「配る時に橋渡しを足す」で作る（本体は変えない）](adr/0012-mcp-app-bridge-injection.md) | 会話の中の画面（MCP App）として配る時も `wbs_viewer.html` は無改変とし、サーバーが配る直前に橋渡しのスクリプトを足す。 |
 
 ## 研究ノート
 

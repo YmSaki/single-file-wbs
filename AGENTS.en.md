@@ -143,6 +143,22 @@ Connections are written **only in the issue's `links[]`**; the view builds the r
 
 How to read the screen (columns, tabs, collapsing, filters, links) is collected in the "Display" section below.
 
+### Opening it inside a conversation (MCP App — optional)
+
+With `scripts/mcp_server.py` (an MCP server, zero dependencies), **the same `wbs_viewer.html` appears as a screen inside the conversation**.
+The viewer is unmodified; a small bridge (`scripts/mcp_app/bridge.js`) is appended at serving time. **Neither the data format nor the conventions in this file change.**
+
+| Tool | Called by | What it does |
+|---|---|---|
+| `wbs_open` (`file` optional) | **the AI** | Shows the JSON on screen. Returns **only a short summary** (leaf and issue counts per project). **It does not return the contents** |
+| `wbs_read` / `wbs_save` | the screen (hidden from the AI) | The screen loads the contents / writes edits back |
+
+- **When asked to "show" or "open" it, call `wbs_open`.** Do not repeat a table in text beyond what the summary says (the user is looking at the screen).
+- **`wbs_open` never changes the data.** Editing the JSON works as before (edit the JSON by the conventions in this file → `scripts/check.py`). **After editing, add one line: "press Refresh on the screen"** (the screen does not reload by itself).
+- **If the JSON is edited outside while the screen is in Edit mode, the screen's next save is refused** (no overwrite — reload with Refresh). Keeping Edit mode OFF while an AI edits is the same advice as with `file://`.
+- Starting it: `python3 scripts/mcp_server.py wbs.json` (stdio) / `--http PORT` (HTTP) / `--read-only` (view only). **Started with a file, it can open only that file.** Only when started with a folder can `file` choose one (nothing outside the folder, nothing but `.json`).
+- Because it runs in a sandboxed iframe, **confirmations (delete etc.) are confirmed by repeating the same action**, and **text prompts (a project name etc.) become an input in an on-screen bar**. Opened via `file://`, everything behaves as before.
+
 ---
 
 ## Display

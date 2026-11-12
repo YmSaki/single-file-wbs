@@ -67,11 +67,44 @@
 
 作法は [`AGENTS.md`](AGENTS.md) に書いてある。AIはこれを読んでからデータを触る。
 
+## Claude の中で開く（MCP App）
+
+同じ画面を、Claude の会話の中にそのまま出せる（[MCP Apps](https://github.com/modelcontextprotocol/ext-apps) 対応のホスト）。
+同梱の MCP サーバー [`scripts/mcp_server.py`](scripts/mcp_server.py) が、`wbs_viewer.html` を**無改変のまま**配る（Python 標準ライブラリだけ・依存ゼロ）。
+
+**Claude Desktop（手元のファイルを直接読む）** — `claude_desktop_config.json` に足して再起動する：
+
+```json
+{
+  "mcpServers": {
+    "wbs": {
+      "command": "python3",
+      "args": ["/path/to/single-file-wbs/scripts/mcp_server.py", "/path/to/wbs.json"]
+    }
+  }
+}
+```
+
+「WBS を見せて」と頼むと `wbs_open` が呼ばれ、会話の中にガントと課題表が出る。
+**「編集」も「更新」もそのまま使える**（保存はサーバーが同じ JSON に書く）。見るだけにしたい時は `--read-only` を足す。
+
+**claude.ai（カスタムコネクタ）** — HTTP で待たせて、トンネルで公開する：
+
+```bash
+python3 scripts/mcp_server.py /path/to/wbs.json --http 8765 --read-only --token "$(python3 -c 'import secrets;print(secrets.token_urlsafe(24))')"
+npx cloudflared tunnel --url http://127.0.0.1:8765
+# コネクタの URL = https://<トンネルのホスト名>/mcp/<合言葉>
+```
+
+- **外へ出す時は `--token` が必須**（URL を知っている人は誰でも読める・`--read-only` を外せば書ける）。合言葉なしでは、自分の端末からの要求しか受けない。
+- 画面の外（AI やエディタ）で JSON が変わっていたら、保存は**上書きせずに断る**。「更新」で読み直す。
+- 仕組みと確認済みの範囲 → [`docs/design/mcp-app.md`](docs/design/mcp-app.md)
+
 ## もっと詳しく
 
 - 仕様とAIの作法 → [`AGENTS.md`](AGENTS.md)（英語版は [`AGENTS.en.md`](AGENTS.en.md)）
 - 設計文書とADR → [`docs/`](docs/index.md)（[全体概要](docs/design/system-overview.md)、[ADR](docs/adr/)）
-- 回帰網の回し方 → [`tests/e2e/README.md`](tests/e2e/README.md)（計画）、[`tests/e2e_issue/README.md`](tests/e2e_issue/README.md)（課題）
+- 回帰網の回し方 → [`tests/e2e/README.md`](tests/e2e/README.md)（計画）、[`tests/e2e_issue/README.md`](tests/e2e_issue/README.md)（課題）、[`tests/e2e_mcp/README.md`](tests/e2e_mcp/README.md)（MCP App）
 - 動作環境 → Google Chrome（最新版）推奨。Edge などのChromium系でも動く。Firefox/SafariはFile System Access API未対応のため不可
 - サンプル → [`wbs_sample.json`](wbs_sample.json)（計画だけ）、[`wbs_sample_issues.json`](wbs_sample_issues.json)（計画＋課題）
 - 状態と印の凡例 → 課題側の操作バーの **「凡例」ボタン**
