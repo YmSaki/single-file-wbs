@@ -32,9 +32,10 @@
 | `AGENTS.md` / `AGENTS.en.md` | 仕様の単一ソース（AI向けAPI仕様も兼ねる） | ドキュメント |
 | `README.md` / `README.en.md` | 目的・使い方の入口 | ドキュメント |
 | `docs/` | 本書・ADR・スクリーンショット | ドキュメント |
-| `tests/` | 正常/異常サンプルJSON（計画＝`tests/`・課題＝`tests/issue/`）＋**2系統の e2e**（計画＝`tests/e2e/`・課題＝`tests/e2e_issue/`、いずれも headless Chromium）。[ADR-0006](../adr/0006-e2e-headless-chromium.md) | テスト |
+| `tests/` | 正常/異常サンプルJSON（計画＝`tests/`・課題＝`tests/issue/`）＋**2系統の e2e**（計画＝`tests/e2e/`・課題＝`tests/e2e_issue/`、いずれも headless Chromium）＋ MCP App の回帰網（`tests/e2e_mcp/`）。[ADR-0006](../adr/0006-e2e-headless-chromium.md) | テスト |
 | `scripts/check.py` | JSON の検査（番号の重複・日付・enum・`links` の指す先の存在・旧キーの残存）。依存ゼロ | ツール |
 | `scripts/refresh_docs_index.py` | `docs/index.md` の自動生成 | ツール |
+| `scripts/mcp_server.py` ／ `scripts/mcp_app/bridge.js` | 会話の中の画面（MCP App）として配る MCP サーバーと橋渡し。本体は無改変。依存ゼロ → [`mcp-app.md`](mcp-app.md)・[ADR-0012](../adr/0012-mcp-app-bridge-injection.md) | ツール |
 
 外部依存・DB・サーバー・定期処理・外部送信は**いずれも無い**（クライアント完結・`file://`・依存ゼロ）。
 その判断は [ADR-0001](../adr/0001-dependency-free-single-file.md)。

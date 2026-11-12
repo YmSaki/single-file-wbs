@@ -67,11 +67,44 @@ The data is one plain JSON file, so you can hand updates to a chat.
 
 The conventions live in [`AGENTS.en.md`](AGENTS.en.md). An AI reads that before touching the data.
 
+## Open it inside Claude (MCP App)
+
+The same screen can be shown right inside a Claude conversation (any host that supports [MCP Apps](https://github.com/modelcontextprotocol/ext-apps)).
+The bundled MCP server [`scripts/mcp_server.py`](scripts/mcp_server.py) serves `wbs_viewer.html` **unmodified** (Python standard library only — zero dependencies).
+
+**Claude Desktop (reads your local file directly)** — add this to `claude_desktop_config.json` and restart:
+
+```json
+{
+  "mcpServers": {
+    "wbs": {
+      "command": "python3",
+      "args": ["/path/to/single-file-wbs/scripts/mcp_server.py", "/path/to/wbs.json"]
+    }
+  }
+}
+```
+
+Ask "show me the WBS" and `wbs_open` is called: the Gantt chart and the issue table appear in the conversation.
+**Edit and Refresh work as usual** (the server writes to the same JSON). Add `--read-only` to make it view-only.
+
+**claude.ai (custom connector)** — listen on HTTP and expose it through a tunnel:
+
+```bash
+python3 scripts/mcp_server.py /path/to/wbs.json --http 8765 --read-only --token "$(python3 -c 'import secrets;print(secrets.token_urlsafe(24))')"
+npx cloudflared tunnel --url http://127.0.0.1:8765
+# connector URL = https://<tunnel host>/mcp/<token>
+```
+
+- **`--token` is required when you expose it** (anyone who knows the URL can read — and write, unless `--read-only`). Without a token the server only answers requests from your own machine.
+- If the JSON changed outside the view (an AI, an editor), a save is **refused rather than overwritten**. Press Refresh to reload.
+- How it works and what has been verified → [`docs/design/mcp-app.md`](docs/design/mcp-app.md) (Japanese)
+
 ## More
 
 - Spec and AI conventions → [`AGENTS.en.md`](AGENTS.en.md) (Japanese original: [`AGENTS.md`](AGENTS.md))
 - Design documents and ADRs → [`docs/`](docs/index.md) ([overview](docs/design/system-overview.md), [ADRs](docs/adr/))
-- Running the regression suites → [`tests/e2e/README.md`](tests/e2e/README.md) (plan), [`tests/e2e_issue/README.md`](tests/e2e_issue/README.md) (issues)
+- Running the regression suites → [`tests/e2e/README.md`](tests/e2e/README.md) (plan), [`tests/e2e_issue/README.md`](tests/e2e_issue/README.md) (issues), [`tests/e2e_mcp/README.md`](tests/e2e_mcp/README.md) (MCP App)
 - Requirements → Google Chrome (latest) recommended; Edge and other Chromium browsers work. Firefox and Safari are not supported (no File System Access API)
 - Samples → [`wbs_sample.json`](wbs_sample.json) (plan only), [`wbs_sample_issues.json`](wbs_sample_issues.json) (plan + issues)
 - Legend of states and marks → the **Legend** button on the issue toolbar
